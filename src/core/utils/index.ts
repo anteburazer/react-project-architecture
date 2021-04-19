@@ -1,2 +1,3 @@
-export * from 'core/utils/Common';
-export * from 'core/utils/Routes';
+export * from 'core/utils/CommonUtils';
+export * from 'core/utils/RoutesUtils';
+export * from 'core/utils/UrlUtils';

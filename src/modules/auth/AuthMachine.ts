@@ -1,34 +1,34 @@
 import { createMachine, assign, DoneInvokeEvent } from 'xstate';
 
-export interface AppContext {
+export interface AuthContext {
   token?: string;
 }
 
-export type AppState =
+export type AuthState =
   | {
       value: 'Idle';
-      context: AppContext & {
+      context: AuthContext & {
         token: undefined;
       };
     }
   | {
       value: 'Loading';
-      context: AppContext;
+      context: AuthContext;
     }
   | {
     value: 'Authenticated';
-    context: AppContext & { token: string };
+    context: AuthContext & { token: string };
   }
   | {
     value: 'NotAuthenticated';
-    context: AppContext & { token: undefined };
+    context: AuthContext & { token: undefined };
   }
 
-export type AppEvent =
+export type AuthEvent =
   | { type: 'LOGIN'; data: Object }
   | { type: 'LOGOUT'; data: Object };
 
-export const appMachine = createMachine<AppContext, AppEvent, AppState>(
+export const authMachine = createMachine<AuthContext, AuthEvent, AuthState>(
   {
     initial: 'Idle',
     context: {
@@ -57,8 +57,8 @@ export const appMachine = createMachine<AppContext, AppEvent, AppState>(
   },
   {
     actions: {
-      assignToken: assign<AppContext, AppEvent>({
-        token: (context: AppContext, event: AppEvent) => (event.data as any).token
+      assignToken: assign<AuthContext, AuthEvent>({
+        token: (context: AuthContext, event: AuthEvent) => (event.data as any).token
       })
     }
   }

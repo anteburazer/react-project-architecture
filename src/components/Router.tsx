@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { Router, Route, Redirect, Switch } from 'react-router-dom';
 import Config from 'core/Config';
 import Home from 'pages/Home';
+import Login from 'pages/auth/Login';
 import { history } from 'core/utils';
 
 const routes = [
@@ -10,6 +11,11 @@ const routes = [
     path: '/admin',
     Component: lazy(() => import('apps/admin/App')),
     exact: false,
+  },
+  {
+    path: Config.routes.login,
+    Component: Login,
+    exact: true,
   },
   {
     path: Config.routes.home,

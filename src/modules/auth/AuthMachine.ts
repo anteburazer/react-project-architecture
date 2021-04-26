@@ -1,4 +1,4 @@
-import { createMachine, assign, DoneInvokeEvent } from 'xstate';
+import { createMachine, assign } from 'xstate';
 
 export interface AuthContext {
   token?: string;

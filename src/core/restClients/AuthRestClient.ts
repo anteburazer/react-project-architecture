@@ -9,6 +9,22 @@ class AuthRestClient extends RestClient {
       credentials,
     )
   );
+
+  loginMock = (credentials: SignInRequest) => (
+    new Promise((resolve, reject) => {
+      console.log('loginMock', credentials);
+      setTimeout(() => {
+        const response = {
+          id: 1,
+          email: 'test@test.com',
+          fullName: 'John Doe',
+          role: 'admin'
+        };
+        resolve(response);
+        // reject();
+      }, 500)
+    })
+  );
 }
 
 export const authRestClient = new AuthRestClient({});

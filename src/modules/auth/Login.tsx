@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm  } from "react-hook-form";
 import { useMachine } from '@xstate/react';
-import { formMachine } from 'core/machines/FormMachine';
+import { createFormMachine } from 'core/machines/FormMachine';
 import { getValidationRules } from './Utils';
 import { SignInRequest } from 'core/models';
 import { authRestClient } from 'core/restClients'
@@ -9,10 +9,11 @@ import { authRestClient } from 'core/restClients'
 export const Login: React.FC = () => {
   const { handleSubmit, formState: { errors }, register } = useForm();
   const rules = getValidationRules();
+  const formMachine = createFormMachine('Successfully logged in', 'Error while logginng in');
   const [state, send] = useMachine(formMachine, {
     services: {
-      submit: (context, event) => authRestClient.login(event.data as SignInRequest)
-    }
+      submit: (context, event) => authRestClient.loginMock(event.data as SignInRequest),
+    },
   });
 
   const submit = (data: SignInRequest) => send('SUBMIT', { data });
@@ -58,7 +59,7 @@ export const Login: React.FC = () => {
             <u>Submit</u>
           </button>
         </div>
-      </form>
+      </form>      
     </div>
   );
 };

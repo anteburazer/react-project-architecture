@@ -1,8 +1,8 @@
-import { createMachine, assign, DoneInvokeEvent } from 'xstate';
+import { createMachine, assign } from 'xstate';
+import toast from 'react-hot-toast';
 
 export interface FormContext {
   formData?: Object;
-  errorMessage?: string;
 }
 
 export type FormState =
@@ -10,7 +10,6 @@ export type FormState =
       value: 'Idle';
       context: FormContext & {
         formData: undefined;
-        errorMessage: undefined;
       };
     }
   | {
@@ -19,80 +18,68 @@ export type FormState =
     }
   | {
     value: 'Resolved';
-    context: FormContext & { formData: Object; error: undefined };
+    context: FormContext & { formData: Object; };
   }
   | {
     value: 'Failed';
-    context: FormContext & { formData: undefined; error: string };
+    context: FormContext & { formData: undefined; };
   }
 
 export type FormEvent = { type: 'SUBMIT'; data: Object };
 
-export const assignData = assign<FormContext, FormEvent>({
-  formData: (context: FormContext, event: FormEvent) => event.data
-});
-
-export const assignErrorMessage = assign<FormContext, DoneInvokeEvent<FormEvent>>({
-  errorMessage: (context: FormContext, event: DoneInvokeEvent<FormEvent>) => 
-    (event.data as any).response ? (event.data as any).response.data.reason : 'Request failed'
-});
-
-export const clearErrorMessage = assign<FormContext, DoneInvokeEvent<FormEvent>>({
-  errorMessage: () => undefined
-});
-
-export const formMachine = createMachine<FormContext, FormEvent, FormState>(
-  {
-    initial: 'Idle',
-    context: {
-      formData: undefined,
-      errorMessage: undefined
-    },
-    states: {
-      Idle: {
-        on: {
-          SUBMIT: {
-            actions: assignData,
-            target: 'Submitting'
+export const createFormMachine = (successNotification: string, errorNotification: string) => (
+  createMachine<FormContext, FormEvent, FormState>(
+    {
+      initial: 'Idle',
+      context: {
+        formData: undefined
+      },
+      states: {
+        Idle: {
+          on: {
+            SUBMIT: {
+              actions: 'assignData',
+              target: 'Submitting'
+            },
           },
         },
-      },
-      Submitting: {
-        invoke: {
-          src: 'submit',
-          onDone: {
-            actions: clearErrorMessage,
-            target: 'Resolved'
-          },
-          onError: {
-            actions: assignErrorMessage,
-            target: 'Failed',            
-          },
-        },
-      },
-      Resolved: {
-        invoke: {
-          src: 'handleSuccess'
-        }
-      },
-      Failed: {
-        on: {
-          SUBMIT: {
-            actions: assignData,
-            target: 'Submitting'
+        Submitting: {
+          invoke: {
+            src: 'submit',
+            onDone: {
+              actions: 'handleSuccess',
+              target: 'Resolved'
+            },
+            onError: {
+              actions: 'handleError',
+              target: 'Failed',            
+            },
           },
         },
-        invoke: {
-          src: 'showError'
-        }
+        Resolved: {
+          type: 'final'
+        },
+        Failed: {
+          on: {
+            SUBMIT: {
+              actions: 'assignData',
+              target: 'Submitting'
+            },
+          }
+        },
       },
     },
-  },
-  {
-    services: {
-      submit: (context: FormContext, event: FormEvent) => () => {},
-      showError: (context: FormContext) => () => {},
-      handleSuccess: (context: FormContext, event: FormEvent) => () => {}
+    {
+      services: {
+        submit: () => () => {}
+      },
+      actions: {
+        assignData: () => assign<FormContext, FormEvent>({
+          formData: (context: FormContext, event: FormEvent) => event.data
+        }),
+        handleSuccess: () => toast.success(successNotification),
+        handleError: () => toast.error(errorNotification)
+      }
     },
-  },
-)
+  )
+);

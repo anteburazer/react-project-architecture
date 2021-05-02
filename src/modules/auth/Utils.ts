@@ -2,7 +2,7 @@ const passwordRegex = new RegExp(
   '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#%&$/()=?*+,._-])(?=.{8,})',
 );
 
-export const getValidationRules = () => ({
+export const validationRules = {
   email: {
     required: 'Email is required',
     pattern: {
@@ -20,4 +20,4 @@ export const getValidationRules = () => ({
         'Password must be at least 8 characters long, contain lowercase, uppercase, number and a symbol',
     },
   },
-});
+};

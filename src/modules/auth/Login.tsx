@@ -2,14 +2,14 @@ import React from 'react';
 import { useForm  } from "react-hook-form";
 import { useMachine } from '@xstate/react';
 import { createFormMachine } from 'core/machines/FormMachine';
-import { getValidationRules } from './Utils';
+import { validationRules } from './Utils';
 import { SignInRequest } from 'core/models';
-import { authRestClient } from 'core/restClients'
+import { authRestClient } from 'core/restClients';
+
+const formMachine = createFormMachine('Successfully logged in', 'Error while logginng in');
 
 export const Login: React.FC = () => {
   const { handleSubmit, formState: { errors }, register } = useForm();
-  const rules = getValidationRules();
-  const formMachine = createFormMachine('Successfully logged in', 'Error while logginng in');
   const [state, send] = useMachine(formMachine, {
     services: {
       submit: (context, event) => authRestClient.loginMock(event.data as SignInRequest),
@@ -28,7 +28,7 @@ export const Login: React.FC = () => {
             className={`form-control rounded-lg shadow ${errors.email && 'form-input-error'}`}
             placeholder="Email"
             disabled={state.matches('Submitting')}
-            {...register("email", { ...rules.email })}
+            {...register("email", { ...validationRules.email })}
           />
 
           <div className="form-error-label mt-2 pl-2">
@@ -42,7 +42,7 @@ export const Login: React.FC = () => {
             type="password"
             placeholder="Password"
             disabled={state.matches('Submitting')}
-            {...register("password", { ...rules.passwordRequired, ...rules.passwordFormat })}
+            {...register("password", { ...validationRules.passwordRequired, ...validationRules.passwordFormat })}
           />
 
           <div className="form-error-label mt-2 pl-2">

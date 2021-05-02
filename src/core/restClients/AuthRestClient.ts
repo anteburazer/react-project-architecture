@@ -1,4 +1,4 @@
-import { RestClient } from 'core/restClients';
+import { RestClient } from 'core/transport/RestClient';
 import { ApiResponsePayload, SignInRequest, SignInResponse } from 'core/models';
 import Config from 'core/Config';
 

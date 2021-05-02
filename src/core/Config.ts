@@ -2,7 +2,8 @@ import AdminConfig from 'apps/admin/Config';
 
 const Config = {
   environment: process.env.REACT_APP_ENVIRONMENT,
-  apiUrl: process.env.REACT_APP_API_URL,
+  apiUrl: process.env.REACT_APP_API_URL || '',
+  webSocketUrl: process.env.REACT_APP_WEBSOCKET_URL || '',
 
   routes: {
     // Admin
